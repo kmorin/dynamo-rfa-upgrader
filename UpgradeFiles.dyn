@@ -34,6 +34,12 @@ for file in os.listdir(IN[0]):
   	d.Close()
   	r.append(newf)
 
+#remove backups
+for file in os.listdir(IN[1]):
+  if file.endswith(".0001.rfa"):
+    ftd = IN[1] + "\\" + file
+    os.remove(ftd)
+
 #test for success
 res = False
 if len(a) == len(r):
