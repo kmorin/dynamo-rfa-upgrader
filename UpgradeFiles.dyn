@@ -23,21 +23,32 @@ a=[]
 r=[]
 app = DocumentManager.Instance.CurrentUIApplication.Application
 
-for file in os.listdir(IN[0]):
-  if file.endswith(".rfa"):
-  	a.append(file)
-  	f = str(IN[0]) + "\\" + file
-  	d = app.OpenDocumentFile(f)
-  	newf = IN[1] + "\\" + file
-  	d.SaveAs(newf)
-  	d.Close()
-  	r.append(newf)
+for dir,subdirlist,files in os.walk(IN[0]):  
+  for file in files:
+    if file.endswith(".rfa"):
+      f = str(dir + "\\" + file)
+      a.append(f)
+      d = app.OpenDocumentFile(f)
+      subpath = ""      
+      if len(subdirlist) == 0:
+        subpath = IN[1] + "\\" + os.path.basename(dir) + "\\"
+        if not os.path.exists(subpath):
+          #create dir to be able to write to
+          os.makedirs(subpath)
+      else:
+        subpath= IN[1] + "\\"
+
+      newf = subpath + file
+      d.SaveAs(newf)
+      d.Close()
+      r.append(newf)
 
 #remove backups
-for file in os.listdir(IN[1]):
-  if file.endswith(".0001.rfa"):
-    ftd = IN[1] + "\\" + file
-    os.remove(ftd)
+for dir,subdirlist,files in os.walk(IN[1]):
+  for file in files:
+    if file.endswith(".0001.rfa"):
+      ftd = dir + "\\" + file
+      os.remove(ftd)
 
 #test for success
 res = False
